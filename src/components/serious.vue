@@ -35,7 +35,7 @@
       class="w-full max-w-md space-y-6"
     >
       <div
-        v-for="(name, index) in game.playerNames"
+        v-for="(_, index) in game.playerNames"
         :key="index"
         class="space-y-2"
       >
@@ -84,8 +84,8 @@
           <h2 class="text-2xl font-bold mb-4">庄家</h2>
           <div class="flex justify-between items-center">
             <div>
-              <p>牌: {{ game.dealer.hand.join(", ") }}</p>
-              <p>总点数: {{ game.calculateScore(game.dealer.hand) }}</p>
+                <p v-if="game.gameOver">牌: {{ game.dealer.hand.join(", ") }}</p>
+                <p v-else>牌: {{ game.dealer.hand[0] }}, [隐藏]</p>
             </div>
           </div>
         </div>
@@ -125,8 +125,7 @@
       <!-- 游戏结果 -->
       <div v-if="game.gameOver" class="mt-6 bg-gray-800 p-6 rounded text-white">
         <h2 class="text-2xl font-bold mb-4">游戏结束</h2>
-        <!-- <p>{{ game.winnerMessage }}</p> -->
-        <p v-for="i in game.players">玩家{{ i.name }} 你{{ i.busted?'输了':'赢了' }}</p>
+        <p>{{ game.winnerMessage }}</p>
         <button
           @click="game.resetGame()"
           class="bg-blue-600 px-6 py-3 rounded hover:bg-blue-700 w-full mt-4"

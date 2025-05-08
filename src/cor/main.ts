@@ -4,30 +4,43 @@ export class BlackjackGame {
     playerCount = 1;
     playerCountConfirmed = false; // 是否确认玩家人数
     playerNames = reactive<string[]>([]);
-    players = reactive<{ name: string; hand: string[]; busted: boolean; score: number }[]>([]);
-    dealer = reactive<{ hand: string[]; score: number }>({ hand: [], score: 0 });
+    players = reactive<{ name: string; hand: string[]; busted: boolean; score: number; naturalBlackjack: boolean }[]>([]);
+    dealer = reactive<{ hand: string[]; score: number; naturalBlackjack: boolean }>({ hand: [], score: 0, naturalBlackjack: false });
     currentPlayerIndex = 0;
     gameStarted = false;
     gameOver = false;
     winnerMessage = '';
     deck: string[] = [];
+    natureBlackJack= false;
 
     startGame() {
         this.initializeDeck();
         this.players = this.playerNames.map((name) => {
             const hand = [this.drawCard(), this.drawCard()];
+            const score = this.calculateScore(hand);
             return {
                 name,
                 hand,
                 busted: false,
-                score: this.calculateScore(hand),
+                score,
+                naturalBlackjack: this.isNaturalBlackjack(hand, score),
             };
         });
         this.dealer.hand = [this.drawCard(), this.drawCard()];
         this.dealer.score = this.calculateScore(this.dealer.hand);
+        if (['A', '10', 'J', 'Q', 'K'].includes(this.dealer.hand[0].slice(0, -1))) {
+            this.dealer.naturalBlackjack = this.isNaturalBlackjack(this.dealer.hand, this.dealer.score);
+        }
         this.gameStarted = true;
 
-        if (this.dealer.score === 21) {
+        this.players.forEach((player) => {
+            if (player.naturalBlackjack) {
+                this.natureBlackJack = true;
+                this.endGame();
+            }
+        });
+        if (this.dealer.naturalBlackjack) {
+            this.natureBlackJack = true;
             this.endGame();
         }
     }
@@ -71,6 +84,10 @@ export class BlackjackGame {
         return score;
     }
 
+    isNaturalBlackjack(hand: string[], score: number): boolean {
+        return hand.length === 2 && score === 21;
+    }
+
     playerAction(playerIndex: number, action: 'hit' | 'stand') {
         const player = this.players[playerIndex];
         if (action === 'hit') {
@@ -99,9 +116,16 @@ export class BlackjackGame {
     endGame() {
         this.gameOver = true;
         const dealerScore = this.dealer.score;
+        const dealerNaturalBlackjack = this.dealer.naturalBlackjack;
         const playerResults = this.players.map((player) => {
             const playerScore = player.score;
-            if (player.busted) {
+            if (player.naturalBlackjack && dealerNaturalBlackjack) {
+                return `${player.name}，你和庄家都是天生21点，平局!`;
+            } else if (player.naturalBlackjack) {
+                return `${player.name}，你是天生21点，你赢了!`;
+            } else if (dealerNaturalBlackjack) {
+                return `${player.name}，庄家是天生21点，你输了!`;
+            } else if (player.busted) {
                 return `${player.name}，对不起,你输了!`;
             } else if (playerScore > dealerScore || dealerScore > 21) {
                 return `${player.name}，你赢了!`;
@@ -122,9 +146,12 @@ export class BlackjackGame {
         this.players = [];
         this.dealer.hand = [];
         this.dealer.score = 0;
+        this.dealer.naturalBlackjack = false;
         this.currentPlayerIndex = 0;
         this.gameStarted = false;
         this.gameOver = false;
         this.winnerMessage = '';
+        this.natureBlackJack= false;
+
     }
 }
