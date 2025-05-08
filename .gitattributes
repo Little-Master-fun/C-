@@ -1,0 +1,8 @@
+*.md linguist-language=C++
+*.yml linguist-language=C++
+*.js linguist-language=C++
+*.xml linguist-language=C++
+*.css linguist-language=C++
+*.vue linguist-language=C++
+*.uml linguist-language=C++
+*.cmd linguist-language=C++
