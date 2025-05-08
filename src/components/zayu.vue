@@ -184,6 +184,13 @@
       >
         再来一次
       </button>
+      <button
+        @click="onReturn"
+        class="bg-blue-600 px-6 py-3 rounded hover:bg-blue-700 w-full mt-4"
+      >
+        返回首页
+      </button>
+
     </div>
     <div
       v-if="game.gameOver && game.natureBlackJack"
@@ -204,6 +211,12 @@
         class="bg-blue-600 px-6 py-3 rounded hover:bg-blue-700 w-full mt-4"
       >
         再来一次
+      </button>
+      <button
+        @click="onReturn"
+        class="bg-blue-600 px-6 py-3 rounded hover:bg-blue-700 w-full mt-4"
+      >
+        返回首页
       </button>
     </div>
   </div>
@@ -236,6 +249,9 @@
 import { reactive,ref } from "vue";
 import { BlackjackGame } from "../cor/main";
 
+defineProps<{
+    onReturn: () => void;
+}>();
 const game = reactive(new BlackjackGame());
 const isPlay = ref(true); // 音乐播放状态
 

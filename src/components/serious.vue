@@ -132,6 +132,12 @@
         >
           重置游戏
         </button>
+        <button
+          @click="onReturn"
+          class="bg-blue-600 px-6 py-3 rounded hover:bg-blue-700 w-full mt-4"
+        >
+          返回首页
+        </button>
       </div>
     </div>
   </div>
@@ -142,6 +148,9 @@ import { reactive } from "vue";
 import { BlackjackGame } from "../cor/main";
 
 const game = reactive(new BlackjackGame());
+defineProps<{
+    onReturn: () => void;
+}>();
 
 function confirmPlayerCount() {
   game.playerNames = Array.from({ length: game.playerCount }, () => "");
